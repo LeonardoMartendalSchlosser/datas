@@ -1,4 +1,9 @@
-import pytest
+import sys
+import os
+
+# Adiciona o diretório pai ao PYTHONPATH para importar o pacote datas
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from datas.funcoes import (
     adicionar_dias,
     subtrair_dias,
