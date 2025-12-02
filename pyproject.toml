@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datas"
+version = "0.1.0"
+description = "Uma biblioteca simples para manipulação de datas em Python."
+authors = [
+    {name = "LeonardoMartendalSchlosser", email = "lmartendalschlosser@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+keywords = ["datas", "utilidades", "calendario"]
+
+[project.urls]
+"Homepage" = "https://github.com/LeonardoMartendalSchlosser/datas"
+"Bug Tracker" = "https://github.com/LeonardoMartendalSchlosser/datas/issues"
