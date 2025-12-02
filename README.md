@@ -16,7 +16,7 @@ Uma biblioteca Python simples e fácil para manipulação de datas, permitindo a
 -data_valida("2025-02-30")
 
 ## Execução dos testes
-python -m pytest test/
+python -m pytest tests/
 
 ## Instalação
 
