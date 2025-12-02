@@ -1,0 +1,89 @@
+name: CI/CD for datas package
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [created, published]
+  workflow_dispatch:  # Permite execução manual
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Display Python version
+      run: |
+        python --version
+    
+    - name: Install package and dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        pip install -e .
+    
+    - name: Run tests
+      run: |
+        python -m pytest tests/ -v
+    
+    - name: Test import
+      run: |
+        python -c "import datas; print(f'Versão: {datas.__version__}')"
+        python -c "from datas.funcoes import data_hoje; print(f'Hoje: {data_hoje()}')"
+
+  build-and-publish:
+    needs: test
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      id-token: write  # Necessário para PyPI trusted publishing
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install build tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+    
+    - name: Build package
+      run: |
+        python -m build
+    
+    - name: Verify package structure
+      run: |
+        echo "Conteúdo do pacote:"
+        tar -tzf dist/*.tar.gz | head -20
+    
+    - name: Check package with twine
+      run: |
+        python -m twine check dist/*
+    
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        verbose: true
+    
+    - name: Notify success
+      run: |
+        echo " Pacote publicado com sucesso no PyPI!"
+        echo "Versão: ${{ github.event.release.tag_name }}"
